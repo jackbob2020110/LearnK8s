@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    meta.helm.sh/release-name: selenium-grid
+    meta.helm.sh/release-namespace: default
+    nginx.ingress.kubernetes.io/auth-keepalive-timeout: "3600"
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 512M
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 512M
+    nginx.ingress.kubernetes.io/proxy-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-next-upstream-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  creationTimestamp: "2024-06-27T11:14:11Z"
+  generation: 3
+  labels:
+    app.kubernetes.io/component: selenium-grid-4.22.0-20240621
+    app.kubernetes.io/instance: selenium-grid
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 4.22.0-20240621
+    helm.sh/chart: selenium-grid-0.32.0
+  name: selenium-grid-selenium-ingress
+  namespace: default
+  resourceVersion: "25550"
+  uid: b1ec0b1a-9d7b-47ba-9095-d9d4cce3b7bb
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: hub.demo.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: selenium-grid-selenium-hub
+            port:
+              number: 4444
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer:
+    ingress:
+    - ip: 10.68.186.160

@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    meta.helm.sh/release-name: selenium-grid
+    meta.helm.sh/release-namespace: default
+  labels:
+    app: selenium-grid-selenium-chrome-node
+    app.kubernetes.io/component: selenium-grid-4.22.0-20240621
+    app.kubernetes.io/instance: selenium-grid
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: selenium-grid-selenium-chrome-node
+    app.kubernetes.io/version: 4.22.0-20240621
+    helm.sh/chart: selenium-grid-0.32.0
+  name: selenium-grid-selenium-chrome-node
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: selenium-grid-selenium-chrome-node
+      app.kubernetes.io/instance: selenium-grid
+  template:
+    metadata:
+      annotations:
+        checksum/event-bus-configmap: d81fd2ca49a1a42eca5919e5f5ec27851e284f68052373beae3b28986efb825f
+        checksum/logging-configmap: b43f102bf091122d4adf4f067957704114d00238b7da2885f41818d4f1862541
+        checksum/node-configmap: 9779852df61ef9368b176030565be8c7b486fdf0d8b146f45146c2aff30e1681
+        checksum/server-configmap: ec65eb38b5b132a310b60dde12e07fcbf95d0951cea219c3da9f6d44f2063491
+      creationTimestamp: null
+      labels:
+        app: selenium-grid-selenium-chrome-node
+        app.kubernetes.io/component: selenium-grid-4.22.0-20240621
+        app.kubernetes.io/instance: selenium-grid
+        app.kubernetes.io/managed-by: helm
+        app.kubernetes.io/name: selenium-grid-selenium-chrome-node
+        app.kubernetes.io/version: 4.22.0-20240621
+        helm.sh/chart: selenium-grid-0.32.0
+    spec:
+      containers:
+      - env:
+        - name: SE_OTEL_SERVICE_NAME
+          value: selenium-grid-selenium-chrome-node
+        - name: SE_NODE_PORT
+          value: "5555"
+        - name: SE_NODE_REGISTER_PERIOD
+          value: "60"
+        - name: SE_NODE_REGISTER_CYCLE
+          value: "5"
+        - name: SE_NODE_MAX_SESSIONS
+          value: "3"
+        - name: SE_NODE_OVERRIDE_MAX_SESSIONS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: selenium-grid-selenium-event-bus
+        - configMapRef:
+            name: selenium-grid-selenium-node-config
+        - configMapRef:
+            name: selenium-grid-selenium-logging-config
+        - configMapRef:
+            name: selenium-grid-selenium-server-config
+        - secretRef:
+            name: selenium-grid-selenium-secrets
+        image: registry.cn-beijing.aliyuncs.com/hubber/node-chrome:4.22.0-20240621
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - bash
+              - -c
+              - '/opt/selenium/nodePreStop.sh '
+        name: selenium-grid-selenium-chrome-node
+        ports:
+        - containerPort: 5555
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: "1"
+            memory: 1Gi
+        startupProbe:
+          exec:
+            command:
+            - bash
+            - -c
+            - '/opt/selenium/nodeProbe.sh Startup '
+          failureThreshold: 12
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 60
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /dev/shm
+          name: dshm
+        - mountPath: /opt/selenium/nodePreStop.sh
+          name: selenium-grid-selenium-node-config
+          subPath: nodePreStop.sh
+        - mountPath: /opt/selenium/nodeProbe.sh
+          name: selenium-grid-selenium-node-config
+          subPath: nodeProbe.sh
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: selenium-grid-selenium-serviceaccount
+      serviceAccountName: selenium-grid-selenium-serviceaccount
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 493
+          name: selenium-grid-selenium-node-config
+        name: selenium-grid-selenium-node-config
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 1Gi
+        name: dshm

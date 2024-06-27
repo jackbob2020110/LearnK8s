@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: selenium-grid
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2024-06-27T11:14:11Z"
+  labels:
+    app.kubernetes.io/component: selenium-grid-4.22.0-20240621
+    app.kubernetes.io/instance: selenium-grid
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 4.22.0-20240621
+    helm.sh/chart: selenium-grid-0.32.0
+    name: selenium-grid-selenium-chrome-node
+  name: selenium-grid-selenium-chrome-node
+  namespace: default
+  resourceVersion: "20301"
+  uid: a5b1d9d0-75a7-4096-be9e-28b2db25e275
+spec:
+  clusterIP: 10.68.87.10
+  clusterIPs:
+  - 10.68.87.10
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: tcp-chrome
+    port: 5555
+    protocol: TCP
+    targetPort: 5555
+  selector:
+    app: selenium-grid-selenium-chrome-node
+    app.kubernetes.io/instance: selenium-grid
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
