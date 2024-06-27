@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: new-nginx
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: asun.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: new-nginx
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
